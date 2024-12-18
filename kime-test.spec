@@ -39,7 +39,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-t
 . "$HOME/.cargo/env"
 
 %build
-RUSTUP_TOOLCHAIN=1.81.0 scripts/build.sh -ar
+export RUSTUP_TOOLCHAIN=1.81.0
+scripts/build.sh -ar
 
 cat > %{kime_out}/%{kime_imsettings_conf} << EOF
 SHORT_DESC="kime"
