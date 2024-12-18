@@ -37,6 +37,7 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
 . "$HOME/.cargo/env"
+rustup toolchain uninstall stable
 
 rustup --version
 rustup toolchain list
