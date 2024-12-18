@@ -35,7 +35,7 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %prep
 %autosetup -n kime-c5e007c4ddaef0b176ba0d4198e1654b7e1dcabd
 
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile default
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile default -y
 rustup default 1.81.0
 
 %build
