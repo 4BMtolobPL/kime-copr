@@ -33,9 +33,9 @@ Summary: Korean IME
 Url: https://github.com/Riey/kime
 Source0: %{{url}}/archive/{repo_latest_commit_id}.tar.gz
 
-BuildRequires: cmake
+# BuildRequires: cmake
 BuildRequires: clang-devel
-BuildRequires: cargo
+# BuildRequires: cargo
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
@@ -61,6 +61,10 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %autosetup -n kime-{repo_latest_commit_hash}
 
 %build
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
+. "$HOME/.cargo/env"
+export RUSTUP_TOOLCHAIN=1.81.0
+
 scripts/build.sh -ar
 
 cat > %{{kime_out}}/%{{kime_imsettings_conf}} << EOF

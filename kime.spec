@@ -25,9 +25,9 @@ Source0: %{url}/archive/refs/tags/v%{version}.tar.gz
 #     xcb(libxcb-devel)
 #     fontconfig(fontconfig-devel)
 #     freetype(freetype-devel)
-BuildRequires: cmake
+# BuildRequires: cmake
 BuildRequires: (clang-devel < 18 or clang17-devel)
-BuildRequires: cargo
+# BuildRequires: cargo
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
@@ -65,6 +65,10 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %autosetup
 
 %build
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
+. "$HOME/.cargo/env"
+export RUSTUP_TOOLCHAIN=1.81.0
+
 # cherry picked from build.sh. will write custom build script if something breaks catastrophically.
 scripts/build.sh -ar
 
