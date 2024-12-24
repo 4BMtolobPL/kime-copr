@@ -1,6 +1,6 @@
 Name: kime
 Version: 3.1.1
-Release: 1
+Release: 2
 License: GPLv3
 Summary: Korean IME
 Url: https://github.com/Riey/kime
