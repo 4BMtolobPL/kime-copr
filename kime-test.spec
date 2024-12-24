@@ -35,10 +35,9 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %prep
 %autosetup -n kime-c5e007c4ddaef0b176ba0d4198e1654b7e1dcabd
 
+%build
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
 . "$HOME/.cargo/env"
-
-%build
 export RUSTUP_TOOLCHAIN=1.81.0
 scripts/build.sh -ar
 
