@@ -9,7 +9,7 @@ Source0: %{url}/archive/c5e007c.tar.gz
 
 # BuildRequires: cmake
 BuildRequires: clang-devel
-BuildRequires: cargo
+# BuildRequires: cargo
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
