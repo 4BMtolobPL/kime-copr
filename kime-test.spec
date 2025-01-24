@@ -9,7 +9,7 @@ Source0: %{url}/archive/c5e007c.tar.gz
 
 # BuildRequires: cmake
 BuildRequires: clang-devel
-# BuildRequires: cargo
+BuildRequires: cargo
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
@@ -36,9 +36,7 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %autosetup -n kime-c5e007c4ddaef0b176ba0d4198e1654b7e1dcabd
 
 %build
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
-. "$HOME/.cargo/env"
-export RUSTUP_TOOLCHAIN=1.81.0
+export RUSTFLAGS="-Clink-args=-L./target/release"
 scripts/build.sh -ar
 
 cat > %{kime_out}/%{kime_imsettings_conf} << EOF
