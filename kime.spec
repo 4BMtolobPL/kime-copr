@@ -1,6 +1,6 @@
 Name: kime
 Version: 3.1.1
-Release: 2
+Release: 3
 License: GPLv3
 Summary: Korean IME
 Url: https://github.com/Riey/kime
@@ -26,7 +26,7 @@ Source0: %{url}/archive/refs/tags/v%{version}.tar.gz
 #     fontconfig(fontconfig-devel)
 #     freetype(freetype-devel)
 # BuildRequires: cmake
-BuildRequires: (clang-devel < 18 or clang17-devel)
+BuildRequires: clang-devel
 # BuildRequires: cargo
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
