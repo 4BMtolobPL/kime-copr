@@ -1,11 +1,11 @@
 
 Name: kime-git
-Version: 3.1.1^git_714_0e846e1
+Version: 3.2.0^git_726_2539caf
 Release: 1
 License: GPLv3
 Summary: Korean IME
 Url: https://github.com/Riey/kime
-Source0: %{url}/archive/0e846e1.tar.gz
+Source0: %{url}/archive/2539caf.tar.gz
 
 # BuildRequires: cmake
 BuildRequires: clang-devel
@@ -32,7 +32,7 @@ Conflicts: kime
 kime is a fast, lightweight, reliable and highly customizable input engine for Korean input.
 
 %prep
-%autosetup -n kime-0e846e1ed5f31f5d53e99f7a6a84d0391c9870f2
+%autosetup -n kime-2539caf368cf7a5a4a13ccaced3acf61f6a9ba42
 
 %build
 scripts/build.sh -ar
