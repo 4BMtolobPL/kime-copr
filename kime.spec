@@ -1,6 +1,6 @@
 Name: kime
 Version: 3.2.0
-Release: 3
+Release: 1%{?dist}
 License: GPLv3
 Summary: Korean IME
 Url: https://github.com/Riey/kime
@@ -12,7 +12,8 @@ Source0: %{url}/archive/refs/tags/v%{version}.tar.gz
 
 # from README.md of kime github repository,
 # build dependencies(package name):
-#     cmake(cmake)
+#     meson(meson)
+#     ninja(ninja-build)
 #     libclang(clang-devel)
 #     cargo(cargo)
 #     pkg-config(pkgconf-pkg-config)
@@ -25,9 +26,13 @@ Source0: %{url}/archive/refs/tags/v%{version}.tar.gz
 #     xcb(libxcb-devel)
 #     fontconfig(fontconfig-devel)
 #     freetype(freetype-devel)
+#     libxkbcommon(libxkbcommon-devel)
 # BuildRequires: cmake
+BuildRequires: meson
+BuildRequires: ninja-build
 BuildRequires: clang-devel
-# BuildRequires: cargo
+BuildRequires: cargo
+BuildRequires: rust
 BuildRequires: pkgconf-pkg-config
 BuildRequires: gtk3-devel
 BuildRequires: gtk4-devel
@@ -37,6 +42,7 @@ BuildRequires: dbus-devel
 BuildRequires: libxcb-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
+BuildRequires: libxkbcommon-devel
 
 # check dbus, fontconfig, freetype, libxcb in the future.
 # optional runtime dependencies
@@ -48,14 +54,11 @@ BuildRequires: freetype-devel
 # xcb (candidate)
 # fontconfig (xim)
 # freetype (xim)
-# libxkbcommon (wayland
+# libxkbcommon (wayland)
 Requires: (google-noto-sans-cjk-vf-fonts or google-noto-sans-cjk-fonts)
 Requires: im-chooser
 
 Conflicts: kime-git
-
-%define kime_out build/out
-%define kime_imsettings_conf kime-imsettings.conf
 
 %description
 
@@ -65,15 +68,28 @@ kime is a fast, lightweight, reliable and highly customizable input engine for K
 %autosetup
 
 %build
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
-. "$HOME/.cargo/env"
-export RUSTUP_TOOLCHAIN=1.81.0
+# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 --profile default -y
+# . "$HOME/.cargo/env"
+# export RUSTUP_TOOLCHAIN=1.81.0
 
 # cherry picked from build.sh. will write custom build script if something breaks catastrophically.
-scripts/build.sh -ar
+# scripts/build.sh -ar
 
-# custom im-chooser compatibility
-cat > %{kime_out}/%{kime_imsettings_conf} << EOF
+%meson
+%meson_build
+
+%check
+%meson_test
+
+%install
+%meson_install
+
+# Remove the documents copied during the Meson build process so that RPM can manage them
+rm -rf %{buildroot}%{_datadir}/doc/kime
+
+# Custom im-chooser compatibility
+install -d %{buildroot}%{_sysconfdir}/X11/xinit/xinput.d
+cat > %{buildroot}%{_sysconfdir}/X11/xinit/xinput.d/kime.conf << EOF
 SHORT_DESC="kime"
 XIM=kime
 XIM_PROGRAM=%{_bindir}/kime-xim
@@ -82,56 +98,56 @@ QT_IM_MODULE=kime
 AUXILIARY_PROGRAM=%{_bindir}/kime-indicator
 EOF
 
-%install
-install -Dm755 %{kime_out}/kime -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-xdg-autostart -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-check -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-indicator -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-candidate-window -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-xim -t %{buildroot}%{_bindir}
-install -Dm755 %{kime_out}/kime-wayland -t %{buildroot}%{_bindir}
-
-install -Dm755 %{kime_out}/libkime_engine.so -t %{buildroot}%{_libdir}
-install -Dm755 %{kime_out}/libkime-gtk3.so %{buildroot}%{_libdir}/gtk-3.0/3.0.0/immodules/im-kime.so
-install -Dm755 %{kime_out}/libkime-gtk4.so %{buildroot}%{_libdir}/gtk-4.0/4.0.0/immodules/libim-kime.so
-install -Dm755 %{kime_out}/libkime-qt5.so %{buildroot}%{_libdir}/qt5/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
-install -Dm755 %{kime_out}/libkime-qt6.so %{buildroot}%{_libdir}/qt6/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
-
-install -Dm644 %{kime_out}/kime_engine.h -t %{buildroot}%{_includedir}
-install -Dm644 %{kime_out}/kime_engine.hpp -t %{buildroot}%{_includedir}
-
-# etc
-install -Dm644 %{kime_out}/%{kime_imsettings_conf} %{buildroot}%{_sysconfdir}/X11/xinit/xinput.d/kime.conf
-install -Dm644 %{kime_out}/kime.desktop -t %{buildroot}%{_datadir}/applications
-install -Dm644 %{kime_out}/icons/64x64/* -t %{buildroot}%{_datadir}/icons/hicolor/64x64/apps
-
 %files
-%license LICENSE*
-%doc README.md
-%doc README.ko.md
-%doc NOTICE.md
-%doc docs/CONFIGURATION.md
-%doc docs/CONFIGURATION.ko.md
-%doc docs/CHANGELOG.md
-%doc res/default_config.yaml
-
+# Install cargo-built binaries
 %{_bindir}/kime
-%{_bindir}/kime-xdg-autostart
 %{_bindir}/kime-check
 %{_bindir}/kime-indicator
 %{_bindir}/kime-candidate-window
 %{_bindir}/kime-xim
 %{_bindir}/kime-wayland
 
+# Install engine shared library
 %{_libdir}/libkime_engine.so
-%{_libdir}/gtk-3.0/3.0.0/immodules/im-kime.so
-%{_libdir}/gtk-4.0/4.0.0/immodules/libim-kime.so
-%{_libdir}/qt5/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
-%{_libdir}/qt6/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
 
+# Install headers
 %{_includedir}/kime_engine.h
 %{_includedir}/kime_engine.hpp
 
-%{_sysconfdir}/X11/xinit/xinput.d/kime.conf
+# Install desktop file
 %{_datadir}/applications/kime.desktop
-%{_datadir}/icons/hicolor/64x64/apps/*
+%{_sysconfdir}/xdg/autostart/kime.desktop
+
+# Install autostart helper script
+%{_bindir}/kime-xdg-autostart
+
+# Install icons
+%{_datadir}/icons/hicolor/64x64/apps/kime-hangul-black.png
+%{_datadir}/icons/hicolor/64x64/apps/kime-hangul-white.png
+%{_datadir}/icons/hicolor/64x64/apps/kime-latin-black.png
+%{_datadir}/icons/hicolor/64x64/apps/kime-latin-white.png
+
+# Install docs
+%doc res/default_config.yaml
+%doc docs/CHANGELOG.md
+%license LICENSE
+%doc NOTICE.md
+%doc README.md
+%doc README.ko.md
+
+%doc docs/CONFIGURATION.md
+%doc docs/CONFIGURATION.ko.md
+
+# Conditional frontend builds
+%{_libdir}/gtk-3.0/3.0.0/immodules/libim-kime.so
+%{_libdir}/gtk-4.0/4.0.0/immodules/libkime-gtk4.so
+%{_libdir}/qt5/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
+%{_libdir}/qt6/plugins/platforminputcontexts/libkimeplatforminputcontextplugin.so
+
+# Custom im-chooser compatibility
+%{_sysconfdir}/X11/xinit/xinput.d/kime.conf
+
+%changelog
+* Tue Jul 21 2026 Talmo Kim <108853516+4BMtolobPL@users.noreply.github.com> - 3.2.0-1
+- Bump kime version to 3.2.0
+- Update kime.spec
