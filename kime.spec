@@ -1,5 +1,5 @@
 Name: kime
-Version: 3.1.1
+Version: 3.2.0
 Release: 3
 License: GPLv3
 Summary: Korean IME
