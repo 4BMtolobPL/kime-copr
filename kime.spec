@@ -61,7 +61,6 @@ Requires: im-chooser
 Conflicts: kime-git
 
 %description
-
 kime is a fast, lightweight, reliable and highly customizable input engine for Korean input.
 
 %prep
